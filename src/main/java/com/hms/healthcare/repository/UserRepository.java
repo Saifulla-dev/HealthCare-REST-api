@@ -1,5 +1,12 @@
 package com.hms.healthcare.repository;
 
-public interface UserRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.hms.healthcare.entity.User;
+
+public interface UserRepository extends JpaRepository<User,Long>{
+
+	boolean existsByEmail(String adminEmail);
+	
 
 }
