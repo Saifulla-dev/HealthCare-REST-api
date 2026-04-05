@@ -30,7 +30,7 @@ public class AdiminAccountCreator implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
 		if(!userRepository.existsByEmail(adminEmail)) {
-			log.info("Creating default admin account");
+			log.info("Creating default admin account" );
 			User adminUser = new User();
 			adminUser.setEmail(adminEmail);
 			adminUser.setPassword(passwordEncoder.encode(adminPassword));

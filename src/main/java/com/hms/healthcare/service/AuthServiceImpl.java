@@ -1,0 +1,57 @@
+package com.hms.healthcare.service;
+
+import java.util.Map;
+
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Service;
+
+import com.hms.healthcare.dao.UserDao;
+import com.hms.healthcare.dto.LoginDto;
+import com.hms.healthcare.dto.UserResponseDto;
+import com.hms.healthcare.entity.User;
+import com.hms.healthcare.mapper.UserMapper;
+import com.hms.healthcare.util.JwtUtil;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class AuthServiceImpl implements AuthService{
+	
+	private final AuthenticationManager authenticationManager;
+	private final UserDetailsService userDetailsService;
+	private final UserMapper userMapper;
+	private final UserDao userDao;
+	private final JwtUtil jwtUtil;
+	
+
+	@Override
+	public Map<String, Object> login(LoginDto loginDto) {
+		// TODO Auto-generated method stub
+		authenticationManager  //this is logic to check email and password verified or not
+					.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
+	
+		UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.getEmail()); //to generate the token
+		
+		String token = jwtUtil.generateToken(userDetails);
+		
+		
+		User user = userDao.findByEmail(loginDto.getEmail()); 
+		//to print the response (or) to give the response to fornt-End
+//		
+		log.info("User {} logged in Successfully", user.getUsername());
+//		UserResponseDto userResponseDto = new UserResponseDto();
+//		userResponseDto.setEmail(user.getEmail());
+//		userResponseDto.setUsername(user.getUsername());
+//		userResponseDto.setMobile(user.getMobile());
+		
+		return Map.of("message","login Success" ,"token" , token , "user" , userMapper.toUserResponseDto(user));
+	}
+
+	
+}
